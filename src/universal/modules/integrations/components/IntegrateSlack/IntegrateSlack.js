@@ -9,6 +9,7 @@ import {cashay} from 'cashay';
 import makeHref from 'universal/utils/makeHref';
 import ServiceRow from '../ServiceRow/ServiceRow';
 import ms from 'ms';
+import Button from 'universal/components/Button/Button';
 
 class IntegrateSlack extends Component {
   constructor(props) {
@@ -88,16 +89,25 @@ class IntegrateSlack extends Component {
         {service &&
           <div className={css(styles.channelHeader)}>
             <div>Channels</div>
-            <div>ID</div>
+            <div>Action</div>
           </div>
         }
         {service && service.syncs.map((sync) => {
           const channel = this.state.channelList.find((c) => c.id === sync.slackChannelId);
           if (!channel) return null;
+          const removeChannel = () => {
+            const {teamMemberId} = this.props;
+            cashay.mutate('removeSlackChannel', {variables: {teamMemberId, channel: channel.id}});
+          };
           return (
             <div className={css(styles.channel)} key={channel.id}>
               <div>#{channel.name}</div>
-              <div>{channel.id}</div>
+              <Button
+                colorPalette="warm"
+                label="Remove"
+                size="smallest"
+                onClick={removeChannel}
+              />
             </div>
           );
         })}
